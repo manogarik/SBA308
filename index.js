@@ -158,7 +158,41 @@ function findavg(student, AssignmentGroup) {
        
     }
     const avg = scoresum / maxpoints;
-    console.log(avg);
+    return avg;
+}
+
+//FINDING PERCENTAGES   
+function findpercent(student, ag)
+{
+    
+    for (let j=0; j < student.length;j++)
+    {
+        let percent = 0;
+        if(checkdue(student[j].assignment_id , AssignmentGroup))
+        {
+            let d1 = getdue(student[j].assignment_id, AssignmentGroup);
+            let d2 = student[j].submission.submitted_at;
+            //CHECKING IF THE STUDENT HAS SUBMITTED BEFORE DUE
+            if(new Date(d1).getTime() >= new Date(d2).getTime())
+            {
+                const score = student[j].submission.score;
+                const maxpoint = max_Points(student[j].assignment_id,AssignmentGroup);
+                percent = score/maxpoint;
+                console.log(percent);
+                continue;
+            }
+            else
+            {
+                //DEDUCTING 10 PERCENT FOR LATE SUBMISSION
+                const score = student[j].submission.score - (0.10 * (max_Points(student[j].assignment_id, AssignmentGroup)));
+                const maxpoint = max_Points(student[j].assignment_id,AssignmentGroup);
+                percent = score/maxpoint;
+                console.log(percent);
+            } 
+                
+        }
+       
+    }
 }
 
 let idcount = [];
@@ -172,12 +206,15 @@ function group(arr, key) {
         acc.set(o[key], (acc.get(o[key]) || []).concat(o))
         , new Map).values()];
 }
-const result = group(LearnerSubmissions, 'learner_id');
+const splitarray = group(LearnerSubmissions, 'learner_id');
 //console.log(result);
 
-for (let i =0 ;i < result.length;i++)
+for (let i =0 ;i < splitarray.length;i++)
 {
-    avg = findavg(result[i],AssignmentGroup);
+    const obj ={};
+    avg = findavg(splitarray[i],AssignmentGroup);
+    findpercent(splitarray[i], AssignmentGroup);
+    //console.log(obj);
 }
 
 
