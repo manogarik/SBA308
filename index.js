@@ -116,13 +116,25 @@ function getdue(assignid, assign) {
        }
    }
  }
- //CHECK IF LATE SUBMISSION
+ //RETURN THE MAXIMUM POINTS POSSIBLE FOR THE ASSIGNEMENT
+ function max_Points(assign_id, ag)
+ {
+    const val = ag.assignments;
+    for (const i in val)
+    {
+        if(val[i].id == assign_id)
+        {
+            return val[i].points_possible;
+        }
+    }
+ }
 
 
 
 //FUNCTION TO ITERATE THE AVERAGE
 function findavg(student, AssignmentGroup) {
-    let avg=0;
+    let scoresum=0;
+    let maxpoints = 0;
     for (let j=0; j < student.length;j++)
     {
         if(checkdue(student[j].assignment_id , AssignmentGroup))
@@ -132,16 +144,20 @@ function findavg(student, AssignmentGroup) {
             //CHECKING IF THE STUDENT HAS SUBMITTED BEFORE DUE
             if(new Date(d1).getTime() >= new Date(d2).getTime())
             {
-                avg += student[j].submission.score;
+                scoresum += student[j].submission.score;
+                maxpoints += max_Points(student[j].assignment_id,AssignmentGroup);
             }
             else
             {
                 //DEDUCTING 10 PERCENT FOR LATE SUBMISSION
+                scoresum += student[j].submission.score - (0.10 * (max_Points(student[j].assignment_id, AssignmentGroup)));
+                maxpoints += max_Points(student[j].assignment_id,AssignmentGroup);
             } 
                 
         }
        
     }
+    const avg = scoresum / maxpoints;
     console.log(avg);
 }
 
