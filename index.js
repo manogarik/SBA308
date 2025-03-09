@@ -76,17 +76,6 @@ const LearnerSubmissions = [
     }
 ];
 
-//FUNCTION TO FIND THE NUMBER OF LEARNERS
-function findlearnerscount(learners) {
-    const arrayofids = [];
-    for (const i in learners) {
-        if (arrayofids.indexOf(learners[i].learner_id) == -1)
-            arrayofids.push(learners[i].learner_id);
-    }
-
-    return arrayofids;
-    //arrayofids.forEach((id) => {console.log(id);});
-}
 
 //FUNCTION TO RETURN DUE DATE
 function getdue(assignid, assign) {
@@ -174,6 +163,7 @@ function findpercent(object,student, ag) {
                     else
                     {
                         percent = score/ maxpoint;
+                       
                         obj[assignid]= percent;
                         
                     }
@@ -212,10 +202,6 @@ function findpercent(object,student, ag) {
     }
 }
 
-let idcount = [];
-//const result =[];
-//Find the total number of learners
-idcount = findlearnerscount(LearnerSubmissions);
 
 //FUNCTION TO SEPERATE EVERY LEARNER AND HIS WORK
 function group(arr, key) {
@@ -240,6 +226,7 @@ function checkag(crse, ag)
 
 
 function getLearnerData(course, ag, submissions) {
+    const res = [];
     //CHECKING IF AN ASSIGNMENT GROUP BELONGS TO COURSE ID OR NOT
     try{
         if((checkag(course,ag)))
@@ -259,19 +246,21 @@ function getLearnerData(course, ag, submissions) {
 
     //FUNCTION TO SEPERATE EVERY LEARNER AND HIS WORK
     const splitarray = group(submissions, 'learner_id');
+    
     for (let i = 0; i < splitarray.length; i++) {
         const obj = {};
         obj.id = splitarray[i][0].learner_id;
         avg = findavg(splitarray[i], AssignmentGroup);
         obj.avg = avg;
         findpercent(obj,splitarray[i], AssignmentGroup);
-        console.log(obj);
+        
+        res.push(obj);
 
     }
-   
+   return res;
 }
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
-//console.log(result);
+console.log(result);
 
 
 
