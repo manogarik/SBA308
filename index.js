@@ -152,10 +152,12 @@ function findavg(student, AssignmentGroup) {
 }
 
 //FINDING PERCENTAGES   
-function findpercent(student, ag) {
-    const obj = {};
+function findpercent(object,student, ag) {
+    const obj = object;
+    
     for (let j = 0; j < student.length; j++) {
         let percent = 0;
+       // obj.id = student[j].learner_id;
         const assignid = student[j].assignment_id;
         if (checkdue(assignid, AssignmentGroup)) {
             let d1 = getdue(assignid, AssignmentGroup);
@@ -170,7 +172,11 @@ function findpercent(student, ag) {
                     if(maxpoint == 0)
                         throw ("Tring to divide by 0");
                     else
+                    {
                         percent = score/ maxpoint;
+                        obj[assignid]= percent;
+                        
+                    }
                 } 
                 catch(error)
                 {
@@ -187,7 +193,10 @@ function findpercent(student, ag) {
                     if(maxpoint == 0)
                         throw ("Tring to divide by 0");
                     else
+                    {
                         percent = score/ maxpoint;
+                        obj[assignid] = percent;
+                    }
                 } 
                 catch(error)
                 {
@@ -196,7 +205,7 @@ function findpercent(student, ag) {
                 
 
             }
-            console.log(percent);
+            
         }
 
 
@@ -235,7 +244,7 @@ function getLearnerData(course, ag, submissions) {
     try{
         if((checkag(course,ag)))
         {
-            console.log("Courseid matching");
+            //console.log("Courseid matching");
         }
         else{
             throw "Invalid input! Assignment group not belonging to courseid";
@@ -252,13 +261,14 @@ function getLearnerData(course, ag, submissions) {
     const splitarray = group(submissions, 'learner_id');
     for (let i = 0; i < splitarray.length; i++) {
         const obj = {};
-
+        obj.id = splitarray[i][0].learner_id;
         avg = findavg(splitarray[i], AssignmentGroup);
         obj.avg = avg;
-        per = findpercent(splitarray[i], AssignmentGroup);
+        findpercent(obj,splitarray[i], AssignmentGroup);
         console.log(obj);
 
     }
+   
 }
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 //console.log(result);
