@@ -98,100 +98,108 @@ function getdue(assignid, assign) {
 
 }
 //CHECK IF ASSIGNMENT IS DUE OR NOT
- function checkdue(id,AssignmentGroup)
- {
-   const val = AssignmentGroup.assignments;
-   let d1 = Date ();
-   //console.log(d1);
-   for( const i in val)
-   {
-       if(val[i].id == id)
-       {
-          let d2 = new Date(val[i].due_at);
-           //console.log(d2);
-           if(new Date(d1).getTime() > new Date(d2).getTime())
-               return true;
-           else 
-               return false;
-       }
-   }
- }
- //RETURN THE MAXIMUM POINTS POSSIBLE FOR THE ASSIGNEMENT
- function max_Points(assign_id, ag)
- {
+function checkdue(id, AssignmentGroup) {
+    const val = AssignmentGroup.assignments;
+    let d1 = Date();
+    //console.log(d1);
+    for (const i in val) {
+        if (val[i].id == id) {
+            let d2 = new Date(val[i].due_at);
+            //console.log(d2);
+            if (new Date(d1).getTime() > new Date(d2).getTime())
+                return true;
+            else
+                return false;
+        }
+    }
+}
+//RETURN THE MAXIMUM POINTS POSSIBLE FOR THE ASSIGNEMENT
+function max_Points(assign_id, ag) {
     const val = ag.assignments;
-    for (const i in val)
-    {
-        if(val[i].id == assign_id)
-        {
+    for (const i in val) {
+        if (val[i].id == assign_id) {
             return val[i].points_possible;
         }
     }
- }
+}
 
 
 
 //FUNCTION TO ITERATE THE AVERAGE
 function findavg(student, AssignmentGroup) {
-    let scoresum=0;
+    let scoresum = 0;
     let maxpoints = 0;
-    for (let j=0; j < student.length;j++)
-    {
-        if(checkdue(student[j].assignment_id , AssignmentGroup))
-        {
+    for (let j = 0; j < student.length; j++) {
+        if (checkdue(student[j].assignment_id, AssignmentGroup)) {
             let d1 = getdue(student[j].assignment_id, AssignmentGroup);
             let d2 = student[j].submission.submitted_at;
             //CHECKING IF THE STUDENT HAS SUBMITTED BEFORE DUE
-            if(new Date(d1).getTime() >= new Date(d2).getTime())
-            {
+            if (new Date(d1).getTime() >= new Date(d2).getTime()) {
                 scoresum += student[j].submission.score;
-                maxpoints += max_Points(student[j].assignment_id,AssignmentGroup);
+                maxpoints += max_Points(student[j].assignment_id, AssignmentGroup);
             }
-            else
-            {
+            else {
                 //DEDUCTING 10 PERCENT FOR LATE SUBMISSION
                 scoresum += student[j].submission.score - (0.10 * (max_Points(student[j].assignment_id, AssignmentGroup)));
-                maxpoints += max_Points(student[j].assignment_id,AssignmentGroup);
-            } 
-                
+                maxpoints += max_Points(student[j].assignment_id, AssignmentGroup);
+            }
+
         }
-       
+
     }
     const avg = scoresum / maxpoints;
     return avg;
 }
 
 //FINDING PERCENTAGES   
-function findpercent(student, ag)
-{
-    
-    for (let j=0; j < student.length;j++)
-    {
+function findpercent(student, ag) {
+    const obj = {};
+    for (let j = 0; j < student.length; j++) {
         let percent = 0;
-        if(checkdue(student[j].assignment_id , AssignmentGroup))
-        {
-            let d1 = getdue(student[j].assignment_id, AssignmentGroup);
+        const assignid = student[j].assignment_id;
+        if (checkdue(assignid, AssignmentGroup)) {
+            let d1 = getdue(assignid, AssignmentGroup);
             let d2 = student[j].submission.submitted_at;
             //CHECKING IF THE STUDENT HAS SUBMITTED BEFORE DUE
-            if(new Date(d1).getTime() >= new Date(d2).getTime())
-            {
+            if (new Date(d1).getTime() >= new Date(d2).getTime()) {
+
                 const score = student[j].submission.score;
-                const maxpoint = max_Points(student[j].assignment_id,AssignmentGroup);
-                percent = score/maxpoint;
-                console.log(percent);
-                continue;
-            }
-            else
-            {
-                //DEDUCTING 10 PERCENT FOR LATE SUBMISSION
-                const score = student[j].submission.score - (0.10 * (max_Points(student[j].assignment_id, AssignmentGroup)));
-                const maxpoint = max_Points(student[j].assignment_id,AssignmentGroup);
-                percent = score/maxpoint;
-                console.log(percent);
-            } 
+                const maxpoint = max_Points(assignid, AssignmentGroup);
+                //CHECKING IF THE POSSIBLE_POINTS IS 0
+                try{
+                    if(maxpoint == 0)
+                        throw ("Tring to divide by 0");
+                    else
+                        percent = score/ maxpoint;
+                } 
+                catch(error)
+                {
+                    console.log(error);
+                }
                 
+            }
+            else {
+                //DEDUCTING 10 PERCENT FOR LATE SUBMISSION
+                const score = student[j].submission.score - (0.10 * (max_Points(assignid, AssignmentGroup)));
+                const maxpoint = max_Points(assignid, AssignmentGroup);
+                //CHECKING IF THE POSSIBLE_POINTS IS 0
+                try{
+                    if(maxpoint == 0)
+                        throw ("Tring to divide by 0");
+                    else
+                        percent = score/ maxpoint;
+                } 
+                catch(error)
+                {
+                    console.log(error);
+                }
+                
+
+            }
+            console.log(percent);
         }
-       
+
+
     }
 }
 
@@ -206,15 +214,15 @@ function group(arr, key) {
         acc.set(o[key], (acc.get(o[key]) || []).concat(o))
         , new Map).values()];
 }
-const splitarray = group(LearnerSubmissions, 'learner_id');
-//console.log(result);
-
-for (let i =0 ;i < splitarray.length;i++)
+ 
+//FUNCTION TO CHECK IF ASSIGNMENT GROUP BELONGS TO COURSE ID OR NOT
+function checkag(crse, ag)
 {
-    const obj ={};
-    avg = findavg(splitarray[i],AssignmentGroup);
-    findpercent(splitarray[i], AssignmentGroup);
-    //console.log(obj);
+     if(ag.course_id == crse.id)
+           return true;
+        else
+            return false;
+    
 }
 
 
@@ -222,7 +230,39 @@ for (let i =0 ;i < splitarray.length;i++)
 
 
 
-//for (let j =0 ;j< result[i].length ; j++)
-//{
-  //  console.log(result[i][j].submission.score);
-//}
+function getLearnerData(course, ag, submissions) {
+    //CHECKING IF AN ASSIGNMENT GROUP BELONGS TO COURSE ID OR NOT
+    try{
+        if((checkag(course,ag)))
+        {
+            console.log("Courseid matching");
+        }
+        else{
+            throw "Invalid input! Assignment group not belonging to courseid";
+        }
+       
+    }
+    catch(error)
+    {
+        console.log(error);
+    }
+
+
+    //FUNCTION TO SEPERATE EVERY LEARNER AND HIS WORK
+    const splitarray = group(submissions, 'learner_id');
+    for (let i = 0; i < splitarray.length; i++) {
+        const obj = {};
+
+        avg = findavg(splitarray[i], AssignmentGroup);
+        obj.avg = avg;
+        per = findpercent(splitarray[i], AssignmentGroup);
+        console.log(obj);
+
+    }
+}
+const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+//console.log(result);
+
+
+
+
