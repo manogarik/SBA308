@@ -142,11 +142,11 @@ function findavg(student, AssignmentGroup) {
 
 //FINDING PERCENTAGES   
 function findpercent(object,student, ag) {
-    const obj = object;
+   const obj = object;
     
     for (let j = 0; j < student.length; j++) {
         let percent = 0;
-       // obj.id = student[j].learner_id;
+        obj.id = student[j].learner_id;
         const assignid = student[j].assignment_id;
         if (checkdue(assignid, AssignmentGroup)) {
             let d1 = getdue(assignid, AssignmentGroup);
@@ -249,11 +249,11 @@ function getLearnerData(course, ag, submissions) {
     
     for (let i = 0; i < splitarray.length; i++) {
         const obj = {};
+       
         obj.id = splitarray[i][0].learner_id;
         avg = findavg(splitarray[i], AssignmentGroup);
         obj.avg = avg;
         findpercent(obj,splitarray[i], AssignmentGroup);
-        
         res.push(obj);
 
     }
